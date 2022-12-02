@@ -76,6 +76,8 @@ public class Main {
 
 
 
+
+
         /*System.out.println("Möchtest du die niedrigsten Ergebnisse entfernen? Antworte mit 'Ja' oder 'Nein'.");
         boolean answer = false;
         int smallest = resultCollection.get(0);
