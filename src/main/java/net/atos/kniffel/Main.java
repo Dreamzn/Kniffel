@@ -1,3 +1,5 @@
+package net.atos.kniffel;
+
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
