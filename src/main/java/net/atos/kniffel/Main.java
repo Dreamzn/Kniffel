@@ -1,115 +1,61 @@
 package net.atos.kniffel;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 public class Main {
 
-    protected static ArrayList<Integer> resultCollection = new ArrayList<Integer>();
-    protected static ArrayList<Integer> resultsDeleted = new ArrayList<Integer>();
+    protected static ArrayList<Integer> currentRoll = new ArrayList<Integer>();
+    protected static ArrayList<Integer> storedDice = new ArrayList<Integer>();
+    static Random rand = new Random();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int roll = 0;
+        String[] choose = new String[0];
+        int roll = 5;
         int result = 0;
-
-        System.out.println("Wie viele Würfel möchtest du würfeln?");                                                    //dice count
-        try {
-            roll = Integer.parseInt(br.readLine());
-        } catch (NumberFormatException nfe) {
-            System.err.println("Ungültiges Zahlenformat!");
-            return;
-        }
-
-        System.out.println("Wie viele Seiten haben deine Würfel?");                                                     //Dice type
-        int dice = 0;
-        try {
-            dice = Integer.parseInt(br.readLine());
-        } catch (NumberFormatException | IOException nfe) {
-            System.err.println("Ungültiges Zahlenformat!");
-            return;
-        }
-
-        for (int count = 0; count < roll; count++) {                                                                    //rolling dice
-            Random rand = new Random();
-            result = rand.nextInt(dice) + 1;
-            System.out.println("Dein " + (count + 1) + ". Ergebnis ist: " + result);
-            resultCollection.add(result);                                                                               //ArrayList adds result after each execution
-        }
-
-        System.out.println("Wie viele der niedrigsten Ergebnisse möchtest du entfernen?");                              //Removing more than one result
-        int deleteResults = 0;
-        int smallest = resultCollection.get(0);
-
-        try {
-            deleteResults = Integer.parseInt(br.readLine());
-        } catch (NumberFormatException nfe) {
-            System.err.println("Ungültiges Zahlenformat!");
-            return;
-        }
-
-        if (deleteResults < 1) {                                                                                         //0 & - numbers
-            System.out.println("Wir haben keinen Würfel entfernt.");
-        }
-
-        for (int count = 0; count < deleteResults; count++) {
-            smallest = Collections.min(resultCollection);
-            int location = resultCollection.indexOf(smallest);
-            resultsDeleted.add(smallest);
-            resultCollection.remove(location);
-        }
-
-        System.out.println("Die übrigen Würfelwürfe sind die folgenden: " + resultCollection);
-        System.out.println("Die entfernten Würfelwürfe sind die folgenden: " + resultsDeleted);                         //Test resultsDeleted
-
-        int diceSum = 0;
-
-        for (int number : resultCollection) {
-            diceSum += number;
-        }
-        System.out.println("Diese Werte ergeben zusammen: " + diceSum);
+        int dice = 6;
 
 
-
-
-
-        /*System.out.println("Möchtest du die niedrigsten Ergebnisse entfernen? Antworte mit 'Ja' oder 'Nein'.");
-        boolean answer = false;
-        int smallest = resultCollection.get(0);
-        String decision;
-        decision = br.readLine();
-
-        switch (decision) {
-            case "Ja":
-                answer = true;
-                break;
-            case "Nein":
-                answer = false;
-                break;
-            default:
-                System.out.println("Bitte erneut eingeben.");
-        }
-
-        if (answer == true) {
-            smallest = Collections.min(resultCollection);
-            int location = resultCollection.indexOf(smallest);
-            resultCollection.remove(location);
-            System.out.println("Der niedrigste Wurf wurde entfernt: " + smallest);
-            System.out.println("Die übrigen Würfelwürfe sind die folgenden: " + resultCollection);
-
-            int diceSum = 0;
-
-            for (int number : resultCollection) {
-                diceSum += number;
+        for (int reroll = 0; reroll < 3; reroll++) {
+            roll = roll - choose.length;
+            for (int count = 0; count < roll; count++) {                                                                    //rolling dice
+                result = rand.nextInt(dice) + 1;
+                System.out.println("Dein " + (count + 1) + ". Ergebnis ist: " + result);
+                currentRoll.add(result);                                                                                   //ArrayList adds result after each execution
             }
-            System.out.println("Diese Werte ergeben zusammen: " + diceSum );
 
-        } */
+            if (reroll < 2) {
+                System.out.println("Welche Würfel möchtest du behalten? Trenne deine Eingabe durch Kommas.");              //Input kept rolls
+                String answer = br.readLine();
+                if (!answer.equals("")) {
+                    choose = answer.split(",");
+                    System.out.println("Das sind " + choose.length + " von " + roll + " Würfeln.");
 
+                    for (int count = 0; count < choose.length; count++) {
+                        storedDice.add(Integer.valueOf(choose[count]));                                                    //Add kept rolls to storedDice
+                    }
+                    System.out.println("\nDeine aktuellen Würfel zeigen: " + storedDice + "\n");
+
+                } else {                                                                                                   //zero rolls are kept
+                    if (storedDice.size() > 0) {
+                        System.out.println("\nEs wurde keines der neuen Ergebnisse behalten. Deine vorherigen Ergebnisse sind: " + storedDice + "\n");
+                    } else {
+                        System.out.println("\nEs wurde keines der Ergebnisse behalten.\n");
+                    }
+                }
+            } else {                                                                                                       //Case: 3. round, need to choose enough rolls
+                System.out.println("\nDies ist die letzte Würfelrunde. Um auf 5 Ergebnisse zu kommen, werden alle Würfel übernommen.");
+                for (int getLast = 1; storedDice.size() < 5; getLast++) {
+                    storedDice.add(currentRoll.get(currentRoll.size() - getLast));
+                }
+                System.out.println("\nDeine endgültigen Würfel zeigen: " + storedDice + "\n");
+
+            }
+        }
     }
+
 }
