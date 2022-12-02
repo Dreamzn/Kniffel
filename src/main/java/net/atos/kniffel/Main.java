@@ -9,11 +9,14 @@ import java.util.Collections;
 import java.util.Random;
 
 public class Main {
+
+    protected static ArrayList<Integer> resultCollection = new ArrayList<Integer>();
+    protected static ArrayList<Integer> resultsDeleted = new ArrayList<Integer>();
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int roll = 0;
         int result = 0;
-        ArrayList<Integer> resultCollection = new ArrayList<Integer>();
 
         System.out.println("Wie viele Würfel möchtest du würfeln?");                                                    //dice count
         try {
@@ -25,7 +28,6 @@ public class Main {
 
         System.out.println("Wie viele Seiten haben deine Würfel?");                                                     //Dice type
         int dice = 0;
-
         try {
             dice = Integer.parseInt(br.readLine());
         } catch (NumberFormatException | IOException nfe) {
@@ -58,10 +60,12 @@ public class Main {
         for (int count = 0; count < deleteResults; count++) {
             smallest = Collections.min(resultCollection);
             int location = resultCollection.indexOf(smallest);
+            resultsDeleted.add(smallest);
             resultCollection.remove(location);
         }
 
         System.out.println("Die übrigen Würfelwürfe sind die folgenden: " + resultCollection);
+        System.out.println("Die entfernten Würfelwürfe sind die folgenden: " + resultsDeleted);                         //Test resultsDeleted
 
         int diceSum = 0;
 
