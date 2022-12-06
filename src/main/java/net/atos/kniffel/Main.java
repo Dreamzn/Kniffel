@@ -14,16 +14,44 @@ public class Main {
     private static ArrayList<Integer> storedDice = new ArrayList<Integer>();
     private static Random rand = new Random();
 
+    private static final int DICECOUNT = 5;
+
     private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
     /**
      * @param rolledDiced number of dice thrown
      * @throws IOException in case the read operation from the command line fails
      */
-    private static void chooseResult(int rolledDiced) throws IOException {
-        ArrayList<Integer> validateDice = new ArrayList<Integer>();
 
-        System.out.println("Welche Würfel möchtest du behalten? Trenne deine Eingabe durch Kommas.");                       //Input kept rolls
+    private static void chooseResult(int rolledDiced) throws IOException {
+        ArrayList<Integer> validateDice = new ArrayList<>();
+        ArrayList<Integer> checkCurrentRoll = new ArrayList<>(currentRoll); // create deep copy
+
+
+//        for (WinPatterns pattern : WinPatterns.values()) {
+//            //oprüfe ob current roll matches
+//        }
+        if(WinPatterns.ONE_EYES.matches(checkCurrentRoll)) {
+            System.out.println("Current roll trifft auf 'Einser' zu.");
+        }
+        if(WinPatterns.TWO_EYES.matches(checkCurrentRoll)) {
+            System.out.println("Current roll trifft auf 'Zweier' zu.");
+        }
+        if(WinPatterns.THIRD_EYES.matches(checkCurrentRoll)) {
+            System.out.println("Current roll trifft auf 'Dreier' zu.");
+        }
+        if(WinPatterns.FOUR_EYES.matches(checkCurrentRoll)) {
+            System.out.println("Current roll trifft auf 'Vierer' zu.");
+        }
+        if(WinPatterns.FIVE_EYES.matches(checkCurrentRoll)) {
+            System.out.println("Current roll trifft auf 'Fünfer' zu.");
+        }
+        if(WinPatterns.SIX_EYES.matches(checkCurrentRoll)) {
+            System.out.println("Current roll trifft auf 'Sechser' zu.");
+        }
+
+        System.out.println("Welche Würfel möchtest du behalten? Trenne deine Eingabe durch Kommas.");                      //Input kept rolls
+        System.out.println(currentRoll);
         String answer = br.readLine();
 
         if (!answer.equals("")) {
@@ -42,22 +70,27 @@ public class Main {
                     break;
                 }
             }
+            if (!validInput) {
+                chooseResult(rolledDiced);
+                return;
+            }
 
             for (String s : choose) {
                 validateDice.add(Integer.valueOf(s));                                                                   //Adds chosen rolls to validation-list
             }
 
-            if (currentRoll.containsAll(validateDice) && validInput) {                                                  //Checks if chosen rolls were actually rolled (anti-cheat)
-                validSelection = true;
-            } else if (!currentRoll.containsAll(validateDice) && validInput) {
-                System.out.println("Dieses Würfelergebnis wurde nicht gewürfelt. Bitte wähle erneut.");
+            //Checks if chosen rolls were actually rolled (anti-cheat)
+
+            for (int v : validateDice) {
+                if (checkCurrentRoll.contains(v)) {
+                    checkCurrentRoll.remove(v);
+                    validSelection = true;
+                } else {
+                    System.out.println("Dieses Würfelergebnis wurde nicht gewürfelt. Bitte wähle erneut.");
+                    validSelection = false;
+                    break;
+                }
             }
-
-
-            // TODO: validate selection
-            // convert String array into list of integer values -> if none valid characters are detected validSelection has to be false
-            // check if the selected integers are part of the currentRoll list -> set valid selection to true
-
 
             if (validSelection) {
                 for (String s : choose) {
@@ -82,27 +115,25 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        String[] choose = new String[0];
-        int roll = 5;
         int result = 0;
         int dice = 6;
 
 
         for (int reroll = 0; reroll < 3; reroll++) {
 
-            roll = roll - choose.length;
+            int roll = DICECOUNT - storedDice.size();
 
             for (int count = 0; count < roll; count++) {                                                                    //rolling dice
-                result = rand.nextInt(dice) + 1;
+                result = rand.nextInt(6) + 1;               //rolling 6sided dice
                 System.out.println("Dein " + (count + 1) + ". Ergebnis ist: " + result);
-                currentRoll.add(result);                                                                                   //ArrayList adds result after each execution
+                currentRoll.add(result);
             }
 
             if (reroll < 2) {
                 chooseResult(roll);
             } else {                                                                                                       //Case: 3. round, need to choose enough rolls
                 System.out.println("\nDies ist die letzte Würfelrunde. Um auf 5 Ergebnisse zu kommen, werden alle Würfel übernommen.");
-                for (int getLast = 1; storedDice.size() < 5; getLast++) {
+                for (int getLast = 1; storedDice.size() < DICECOUNT; getLast++) {
                     storedDice.add(currentRoll.get(currentRoll.size() - getLast));
                 }
                 System.out.println("\nDeine endgültigen Würfel zeigen: " + storedDice + "\n");
