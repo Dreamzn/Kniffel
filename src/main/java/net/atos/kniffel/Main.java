@@ -3,20 +3,30 @@ package net.atos.kniffel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Main {
 
     private static ArrayList<Integer> currentRoll = new ArrayList<Integer>();
-    private static ArrayList<Integer> storedDice = new ArrayList<Integer>();
+    private static ArrayList<Integer> storedDices = new ArrayList<Integer>();
     private static Random rand = new Random();
-
     private static final int DICECOUNT = 5;
+    private static boolean helpAnswerOn = true;
 
     private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    private static void resultSuggestion() {
+
+        ArrayList<Integer> availableDices = new ArrayList<>();
+        availableDices.addAll(currentRoll);
+        availableDices.addAll(storedDices);
+        for (WinPatterns pattern : WinPatterns.values()) {
+
+            if (pattern.matches(availableDices)) {
+                System.out.println("Deine gesamten Ergebnisse treffen auf '" + pattern.getDisplayName() + "' zu. (" + pattern.getPoints(availableDices) + " Punkte)");
+            }
+        }
+    }
 
     /**
      * @param rolledDiced number of dice thrown
@@ -24,66 +34,33 @@ public class Main {
      */
 
     private static void chooseResult(int rolledDiced) throws IOException {
-        ArrayList<Integer> validateDice = new ArrayList<>();
-        ArrayList<Integer> checkCurrentRoll = new ArrayList<>(currentRoll); // create deep copy
+        ArrayList<Integer> chosenDices = new ArrayList<>();
+        ArrayList<Integer> currentRollTemp = new ArrayList<>(currentRoll); // create deep copy
 
-
-//        for (WinPatterns pattern : WinPatterns.values()) {
-//            //oprüfe ob current roll matches
-//        }
-        if(WinPatterns.ONE_EYES.matches(checkCurrentRoll)) {
-            System.out.println("Current roll trifft auf 'Einser' zu.");
-        }
-        if(WinPatterns.TWO_EYES.matches(checkCurrentRoll)) {
-            System.out.println("Current roll trifft auf 'Zweier' zu.");
-        }
-        if(WinPatterns.THIRD_EYES.matches(checkCurrentRoll)) {
-            System.out.println("Current roll trifft auf 'Dreier' zu.");
-        }
-        if(WinPatterns.FOUR_EYES.matches(checkCurrentRoll)) {
-            System.out.println("Current roll trifft auf 'Vierer' zu.");
-        }
-        if(WinPatterns.FIVE_EYES.matches(checkCurrentRoll)) {
-            System.out.println("Current roll trifft auf 'Fünfer' zu.");
-        }
-        if(WinPatterns.SIX_EYES.matches(checkCurrentRoll)) {
-            System.out.println("Current roll trifft auf 'Sechser' zu.");
-        }
-
-        System.out.println("Welche Würfel möchtest du behalten? Trenne deine Eingabe durch Kommas.");                      //Input kept rolls
-        System.out.println(currentRoll);
+        System.out.println("\nWelche Würfel möchtest du behalten? Trenne deine Eingabe durch Kommas.");                      //Input kept rolls
+        System.out.println("Verfügbar sind die folgenden: " + currentRoll);
         String answer = br.readLine();
 
         if (!answer.equals("")) {
-            String[] choose = answer.split("\\D");
-            boolean validInput = false;
+            String[] choose = answer.replaceAll(" ", "").split(",");
             boolean validSelection = false;
 
-            String answerCheck = answer.replaceAll("\\W", "");                                              //Checks if Input is valid
-            char[] checkInput = answerCheck.toCharArray();
-            for (char c : checkInput) {
-                if (Character.isDigit(c)) {
-                    validInput = true;
-                } else {
-                    System.out.println("Das ist kein gültiges Zahlenformat.");
-                    validInput = false;
-                    break;
-                }
-            }
-            if (!validInput) {
-                chooseResult(rolledDiced);
-                return;
-            }
-
             for (String s : choose) {
-                validateDice.add(Integer.valueOf(s));                                                                   //Adds chosen rolls to validation-list
+                try {
+                    chosenDices.add(Integer.valueOf(s));                                                                   //Adds chosen rolls to validation-list
+                } catch (NumberFormatException nfe) {
+                    System.out.println("Das ist kein gültiges Zahlenformat.");
+                    chooseResult(rolledDiced);
+                    return;
+                }
             }
 
             //Checks if chosen rolls were actually rolled (anti-cheat)
 
-            for (int v : validateDice) {
-                if (checkCurrentRoll.contains(v)) {
-                    checkCurrentRoll.remove(v);
+            for (int chosenDice : chosenDices) {
+                int idx = currentRollTemp.indexOf(chosenDice);
+                if (idx != -1) {
+                    currentRollTemp.remove(idx);
                     validSelection = true;
                 } else {
                     System.out.println("Dieses Würfelergebnis wurde nicht gewürfelt. Bitte wähle erneut.");
@@ -93,35 +70,38 @@ public class Main {
             }
 
             if (validSelection) {
-                for (String s : choose) {
-                    storedDice.add(Integer.valueOf(s));                                                                 //Add kept rolls to storedDice
-                }
+                storedDices.addAll(chosenDices);                                                                 //Add kept rolls to storedDice
                 currentRoll.clear();                                                                                    //Prevents cheating by limiting the selectable rolls to the current round of rolls
             } else {
                 chooseResult(rolledDiced);
                 return;
             }
 
-            System.out.println("Das sind " + choose.length + " von " + rolledDiced + " Würfeln.");
-            System.out.println("\nDeine aktuellen Würfel zeigen: " + storedDice + "\n");
+            System.out.println("Das sind " + storedDices.size() + " von " + rolledDiced + " Würfeln.");
+            System.out.println("\nDeine aktuellen Würfel zeigen: " + storedDices + "\n");
 
-        } else if (storedDice.size() > 0) {                                                                             //zero rolls are kept
+        } else if (storedDices.size() > 0) {                                                                             //zero rolls are kept
             System.out.println("\nEs wurde keines der neuen Ergebnisse behalten." +
-                    " Deine vorherigen Ergebnisse sind: " + storedDice + "\n");
+                    " Deine vorherigen Ergebnisse sind: " + storedDices + "\n");
         } else {
             System.out.println("\nEs wurde keines der Ergebnisse behalten.\n");
+            currentRoll.clear();
         }
     }
 
     public static void main(String[] args) throws IOException {
 
-        int result = 0;
-        int dice = 6;
+        System.out.println("Wenn du mit Spielunterstützung spielen möchtest reagiere mit 'j/N'.");
+        String helpAnswer = br.readLine();
+        if (!helpAnswer.equalsIgnoreCase("j")) {
+            helpAnswerOn = false;
+        }
 
+        int result = 0;
 
         for (int reroll = 0; reroll < 3; reroll++) {
 
-            int roll = DICECOUNT - storedDice.size();
+            int roll = DICECOUNT - storedDices.size();
 
             for (int count = 0; count < roll; count++) {                                                                    //rolling dice
                 result = rand.nextInt(6) + 1;               //rolling 6sided dice
@@ -129,14 +109,34 @@ public class Main {
                 currentRoll.add(result);
             }
 
+            System.out.println("-----------------------------------------------------------------");
+
             if (reroll < 2) {
+                if (helpAnswerOn) {
+                    resultSuggestion();
+                }
                 chooseResult(roll);
+                if (storedDices.size() == 5) { //in Case user keeps 5 rolls first/second round
+                    System.out.println("Du hast 5 Würfel behalten. Hiermit ist diese Runde beendet.");
+                    reroll = 3;
+                }
             } else {                                                                                                       //Case: 3. round, need to choose enough rolls
                 System.out.println("\nDies ist die letzte Würfelrunde. Um auf 5 Ergebnisse zu kommen, werden alle Würfel übernommen.");
-                for (int getLast = 1; storedDice.size() < DICECOUNT; getLast++) {
-                    storedDice.add(currentRoll.get(currentRoll.size() - getLast));
+                for (int getLast = 1; storedDices.size() < DICECOUNT; getLast++) {
+                    storedDices.add(currentRoll.get(currentRoll.size() - getLast));
                 }
-                System.out.println("\nDeine endgültigen Würfel zeigen: " + storedDice + "\n");
+                System.out.println("\nDeine endgültigen Würfel zeigen: " + storedDices + "\n");
+                if (helpAnswerOn) {
+                    resultSuggestion();
+                }
+                System.out.println("Wähle in welches Feld du deinen Wurf eintragen möchtest.");
+                int oneEyes = 0;
+                int twoEyes = 0;
+                int threeEyes = 0;
+                int fourEyes = 0;
+                int fiveEyes = 0;
+                int sixEyes = 0;
+                int threeOfA
             }
         }
     }
