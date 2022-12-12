@@ -1,11 +1,11 @@
 package net.atos.kniffel;
 
-import javax.xml.transform.Result;
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class Main {
 
@@ -19,7 +19,7 @@ public class Main {
 
     private static void resultSelection() throws IOException {
         System.out.println("Wähle in welches Feld du deinen Wurf eintragen möchtest. Bei der Wahl eines nicht " +
-                "zutreffenden Feldes, wird diese gestrichen.");
+                                   "zutreffenden Feldes, wird diese gestrichen.");
 
         HashMap<String, Integer> results = new HashMap<String, Integer>();
         ArrayList<String> availableResults = new ArrayList<>();
@@ -45,14 +45,15 @@ public class Main {
 
         String selectedResultName = br.readLine();
         for (String i : results.keySet()) {
-        try {
+            try {
                 if (selectedResultName.equals(i)) {
                     results.replace(i, points);
                 }
-        } catch (NumberFormatException nfe) {
-            System.out.println("Das ist kein gültiges Ergebnisfeld.");
-            resultSelection();
-        }}
+            } catch (NumberFormatException nfe) {
+                System.out.println("Das ist kein gültiges Ergebnisfeld.");
+                resultSelection();
+            }
+        }
         System.out.println("Es wurden deine Punkte bei '" + selectedResultName + "' eingetragen.");
         storedDices.clear();
         currentRoll.clear();
@@ -73,6 +74,7 @@ public class Main {
 
     /**
      * @param rolledDiced number of dice thrown
+     *
      * @throws IOException in case the read operation from the command line fails
      */
 
@@ -125,13 +127,12 @@ public class Main {
 
         } else if (storedDices.size() > 0) {                                                                             //zero rolls are kept
             System.out.println("\nEs wurde keines der neuen Ergebnisse behalten." +
-                    " Deine vorherigen Ergebnisse sind: " + storedDices + "\n");
+                                       " Deine vorherigen Ergebnisse sind: " + storedDices + "\n");
         } else {
             System.out.println("\nEs wurde keines der Ergebnisse behalten.\n");
             currentRoll.clear();
         }
     }
-<<<<<<< HEAD
 
     public static void main(String[] args) throws IOException {
 
@@ -182,6 +183,5 @@ public class Main {
             }
         }
     }
-=======
->>>>>>> c2bdcca (Multiserver)
+
 }

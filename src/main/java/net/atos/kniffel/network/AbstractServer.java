@@ -1,14 +1,17 @@
-package net.atos.kniffel.Network;
+package net.atos.kniffel.network;
 
-import java.io.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractServer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractServer.class);
 
     private static final int MAX_CLIENT = 2;
 
@@ -29,16 +32,16 @@ public abstract class AbstractServer {
 
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Created new server socket on port ::= [" + port + "]");
+            LOG.info("Created new server socket on port ::= [{}]", port);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.warn("Exception during server socket creation: ", e);
             System.exit(-1);
         }
 
         while (running) {
 
             try {
-                System.out.println("Wait for client connection...");
+                LOG.debug("Wait for client connection...");
                 Socket clientSocket = serverSocket.accept();
 
                 connectedClients.removeIf(socket -> socket.isClosed() || !socket.isConnected());
@@ -47,14 +50,14 @@ public abstract class AbstractServer {
                     connectedClients.add(clientSocket);
                     Thread client = createServerClientThread(clientSocket);
                     client.start();
-                    System.out.println("Established connection to client, create input and output streams...");
+                    LOG.debug("Established connection to client, create input and output streams...");
                 } else {
-                    System.out.println("Cannot establish connection, limit of " + MAX_CLIENT + " is reached");
+                    LOG.debug("Cannot establish connection, limit of {} is reached", MAX_CLIENT);
                     clientSocket.close();
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.warn("Exception during client connection: ", e);
             }
         }
     }

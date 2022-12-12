@@ -1,4 +1,4 @@
-package net.atos.kniffel.Network;
+package net.atos.kniffel.network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
