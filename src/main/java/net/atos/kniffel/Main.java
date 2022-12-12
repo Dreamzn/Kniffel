@@ -1,5 +1,7 @@
 package net.atos.kniffel;
 
+import javax.xml.transform.Result;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +16,47 @@ public class Main {
     private static boolean helpAnswerOn = true;
 
     private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    private static void resultSelection() throws IOException {
+        System.out.println("Wähle in welches Feld du deinen Wurf eintragen möchtest. Bei der Wahl eines nicht " +
+                "zutreffenden Feldes, wird diese gestrichen.");
+
+        HashMap<String, Integer> results = new HashMap<String, Integer>();
+        ArrayList<String> availableResults = new ArrayList<>();
+        int points = 1;
+        results.put("oneEyes", 0);
+        results.put("twoEyes", 0);
+        results.put("threeEyes", 0);
+        results.put("fourEyes", 0);
+        results.put("fiveEyes", 0);
+        results.put("sixEyes", 0);
+        results.put("threeOfAKind", 0);
+        results.put("fourOfAKind", 0);
+        results.put("Kniffel", 0);
+        results.put("fullHouse", 0);
+        results.put("smallStreet", 0);
+        results.put("bigStreet", 0);
+        results.put("Chance", 0);
+
+        for (String i : results.keySet()) {
+            if (results.get(i) < 1) availableResults.add(i);
+        }
+        System.out.println("Zur Auswahl stehen die folgenden Felder: " + availableResults);
+
+        String selectedResultName = br.readLine();
+        for (String i : results.keySet()) {
+        try {
+                if (selectedResultName.equals(i)) {
+                    results.replace(i, points);
+                }
+        } catch (NumberFormatException nfe) {
+            System.out.println("Das ist kein gültiges Ergebnisfeld.");
+            resultSelection();
+        }}
+        System.out.println("Es wurden deine Punkte bei '" + selectedResultName + "' eingetragen.");
+        storedDices.clear();
+        currentRoll.clear();
+    }
 
     private static void resultSuggestion() {
 
@@ -97,48 +140,45 @@ public class Main {
             helpAnswerOn = false;
         }
 
-        int result = 0;
+        for (int roundCount = 0; roundCount < 13; roundCount++) {
 
-        for (int reroll = 0; reroll < 3; reroll++) {
+            int result = 0;
 
-            int roll = DICECOUNT - storedDices.size();
+            for (int reroll = 0; reroll < 3; reroll++) {
 
-            for (int count = 0; count < roll; count++) {                                                                    //rolling dice
-                result = rand.nextInt(6) + 1;               //rolling 6sided dice
-                System.out.println("Dein " + (count + 1) + ". Ergebnis ist: " + result);
-                currentRoll.add(result);
-            }
+                int roll = DICECOUNT - storedDices.size();
 
-            System.out.println("-----------------------------------------------------------------");
-
-            if (reroll < 2) {
-                if (helpAnswerOn) {
-                    resultSuggestion();
+                for (int count = 0; count < roll; count++) {                                                                    //rolling dice
+                    result = rand.nextInt(6) + 1;               //rolling 6sided dice
+                    System.out.println("Dein " + (count + 1) + ". Ergebnis ist: " + result);
+                    currentRoll.add(result);
                 }
-                chooseResult(roll);
-                if (storedDices.size() == 5) { //in Case user keeps 5 rolls first/second round
-                    System.out.println("Du hast 5 Würfel behalten. Hiermit ist diese Runde beendet.");
-                    reroll = 3;
+
+                System.out.println("-----------------------------------------------------------------");
+
+                if (reroll < 2) {
+                    if (helpAnswerOn) {
+                        resultSuggestion();
+                    }
+
+                    chooseResult(roll);
+
+                    if (storedDices.size() == 5) { //in Case user keeps 5 rolls first/second round
+                        System.out.println("Du hast 5 Würfel behalten. Hiermit ist diese Runde beendet.");
+                        reroll = 3;
+                    }
+                } else {                                                                                                       //Case: 3. round, need to choose enough rolls
+                    System.out.println("\nDies ist die letzte Würfelrunde. Um auf 5 Ergebnisse zu kommen, werden alle Würfel übernommen.");
+                    for (int getLast = 1; storedDices.size() < DICECOUNT; getLast++) {
+                        storedDices.add(currentRoll.get(currentRoll.size() - getLast));
+                    }
+                    System.out.println("\nDeine endgültigen Würfel zeigen: " + storedDices + "\n");
+                    if (helpAnswerOn) {
+                        resultSuggestion();
+                    }
+                    resultSelection();
                 }
-            } else {                                                                                                       //Case: 3. round, need to choose enough rolls
-                System.out.println("\nDies ist die letzte Würfelrunde. Um auf 5 Ergebnisse zu kommen, werden alle Würfel übernommen.");
-                for (int getLast = 1; storedDices.size() < DICECOUNT; getLast++) {
-                    storedDices.add(currentRoll.get(currentRoll.size() - getLast));
-                }
-                System.out.println("\nDeine endgültigen Würfel zeigen: " + storedDices + "\n");
-                if (helpAnswerOn) {
-                    resultSuggestion();
-                }
-                System.out.println("Wähle in welches Feld du deinen Wurf eintragen möchtest.");
-                int oneEyes = 0;
-                int twoEyes = 0;
-                int threeEyes = 0;
-                int fourEyes = 0;
-                int fiveEyes = 0;
-                int sixEyes = 0;
-                int threeOfA
             }
         }
     }
-
 }
