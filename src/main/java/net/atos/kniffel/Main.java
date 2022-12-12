@@ -131,6 +131,7 @@ public class Main {
             currentRoll.clear();
         }
     }
+<<<<<<< HEAD
 
     public static void main(String[] args) throws IOException {
 
@@ -181,4 +182,6 @@ public class Main {
             }
         }
     }
+=======
+>>>>>>> c2bdcca (Multiserver)
 }
