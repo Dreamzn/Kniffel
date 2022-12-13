@@ -32,13 +32,15 @@ public class Client {
     }
 
     public void sendMessage() {
+        Message message;
         while (true) {
             Scanner scanner = new Scanner(System.in);
-            System.out.println("Send a message");
-            String message = scanner.nextLine();
+            System.out.println("Your name");
+            String name = scanner.nextLine();
+            message = new Message(Message.MessageType.REGISTER, name, "Server");
             if (clientSocket.isConnected() && !clientSocket.isClosed()) {
                 System.out.println("Send <" + message + "> to the SERVER");
-                socketOutputStrm.println(message);
+                socketOutputStrm.println(message.toJSON());
             } else {
                 throw new RuntimeException("Client is not connected anymore !!!");
             }

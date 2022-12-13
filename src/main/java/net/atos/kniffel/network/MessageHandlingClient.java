@@ -45,6 +45,8 @@ public class MessageHandlingClient extends Thread {
      */
     private MessageHandlingServer server;
 
+    private String name;
+
 
     /**
      * Create a new client for message handling.
@@ -62,23 +64,54 @@ public class MessageHandlingClient extends Thread {
         this.start();
     }
 
+    public void setParticipant(String name) {
+        this.name = name;
+    }
+
+    public String getParticipant() {
+        return name;
+    }
+
     @Override
     public void run() {
 
+        boolean run = true;
 
-        while (true) {
+        while (run) {
 
             try {
 
                 LOG.debug("Wait for message...");
                 String message = inputStream.readLine();
-                messageHandler.forEach(handler -> handler.handleMessage(server, this, message));
+
+                if (message == null) {
+                    LOG.debug("Lost connection to client, close socket...");
+                    socket.close();
+                    break;
+                }
+
+                LOG.trace("Received message from client ::= [{}]", message);
+                Message msgObj = Message.fromJSON(message);
+                messageHandler.forEach(handler -> handler.handleMessage(server, this, msgObj));
 
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.warn("Error during message from client: ", e);
+
             }
         }
 
+    }
+
+    public void closeSocket() throws IOException {
+        socket.close();
+    }
+
+    public void sendMessage(Message message){
+        try {
+            outputStream.write(message.toJSON());
+        } catch (IOException e) {
+            LOG.warn("Exception for sending a message: ", e);
+        }
     }
 
     @Override
