@@ -15,9 +15,7 @@ public class MessageAll extends AbstractMessageHandler {
     @Override
     public void handle(MessageHandlingServer server, MessageHandlingClient client, Message message) {
         for (MessageHandlingClient messageHandlingClient :server.getConnectedClients()) {
-            if(messageHandlingClient.getParticipant().equals(client.getParticipant())){
-                continue;
-            }else {
+            if(!messageHandlingClient.getParticipant().equals(client.getParticipant())){
                 client.sendMessage(message);
             }
         }

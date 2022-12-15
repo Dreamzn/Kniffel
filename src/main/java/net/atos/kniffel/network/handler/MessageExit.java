@@ -23,9 +23,7 @@ public class MessageExit extends AbstractMessageHandler {
             LOG.warn("Failed to close the socket: ",e);
         }
         for (MessageHandlingClient messageHandlingClient :server.getConnectedClients()) {
-            if(messageHandlingClient.getParticipant().equals(client.getParticipant())){
-                continue;
-            }else {
+            if(!messageHandlingClient.getParticipant().equals(client.getParticipant())){
                 client.sendMessage(new Message(Message.MessageType.MESSAGE_ALL, "Client" + client.getParticipant() +" disconected", "All"));
             }
         }
