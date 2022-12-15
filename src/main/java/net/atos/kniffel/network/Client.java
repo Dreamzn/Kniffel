@@ -21,23 +21,39 @@ public class Client {
     }
 
     public void start() throws IOException {
-
         clientSocket = new Socket(ip, port);
         clientSocket.setSoTimeout(0);
         socketOutputStrm = new PrintWriter(clientSocket.getOutputStream(), true);
 
+        register();
         sendMessage();
 
         clientSocket.close();
     }
 
+    public void register() {
+        Message message;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Write your name");
+        String name = scanner.nextLine();
+        message = new Message(Message.MessageType.REGISTER, name, "Server");
+        if (clientSocket.isConnected() && !clientSocket.isClosed()) {
+            socketOutputStrm.println(message.toJSON());
+        } else {
+            throw new RuntimeException("Client is not connected anymore !!!");
+        }
+
+    }
+
     public void sendMessage() {
         Message message;
+        Scanner scanner = new Scanner(System.in);
         while (true) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Your name");
-            String name = scanner.nextLine();
-            message = new Message(Message.MessageType.REGISTER, name, "Server");
+
+            System.out.println("Write message");
+            String messageToSend = scanner.nextLine();
+            message = new Message(Message.MessageType.MESSAGE_ALL, messageToSend, "All");
             if (clientSocket.isConnected() && !clientSocket.isClosed()) {
                 System.out.println("Send <" + message + "> to the SERVER");
                 socketOutputStrm.println(message.toJSON());
