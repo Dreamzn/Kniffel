@@ -25,10 +25,6 @@ public enum WinPatterns {
             (diceValues) -> diceValues.contains(6),
             (diceValues) -> Collections.frequency(diceValues, 6) * 6),
 
-
-    //    BONUS_AT_63_POINTS,
-    //meaning: 63 points were aquired solely by adding the results of ONE-SIX_EYES rolls (upper Part of Win-Sheet). Will add 35 Points to final result.
-
     THREE_OF_A_KIND("Dreierpasch",
             (diceValues) -> {
                 int countOne = Collections.frequency(diceValues, 1);
@@ -41,16 +37,7 @@ public enum WinPatterns {
                 return (countOne > 2 || countTwo > 2 || countThree > 2 || countFour > 2 || countFive > 2 || countSix > 2);
             },
             (diceValues) -> {
-                int points = 0;
-                int eyes = 1;
-                while (eyes < 7) {
-                    if (Collections.frequency(diceValues, eyes) >= 3) {
-                        points = eyes * 3;
-                        break;
-                    } else {
-                        eyes++;
-                    }
-                }
+                int points = diceValues.stream().mapToInt(Integer::intValue).sum();
                 return points;
             }),
     FOUR_OF_A_KIND("Viererpasch",
@@ -65,16 +52,7 @@ public enum WinPatterns {
                 return (countOne > 3 || countTwo > 3 || countThree > 3 || countFour > 3 || countFive > 3 || countSix > 3);
             },
             (diceValues) -> {
-                int points = 0;
-                int eyes = 1;
-                while (eyes < 7) {
-                    if (Collections.frequency(diceValues, eyes) >= 4) {
-                        points = eyes * 4;
-                        break;
-                    } else {
-                        eyes++;
-                    }
-                }
+                int points = diceValues.stream().mapToInt(Integer::intValue).sum();
                 return points;
             }),
     KNIFFEL("Kniffel",
@@ -100,46 +78,29 @@ public enum WinPatterns {
                         (countOne == 2 || countTwo == 2 || countThree == 2 || countFour == 2 || countFive == 2 || countSix == 2));
             },
             (diceValue) -> 25),
-    SMALL_STREET("kleine Straße",
+    SMALL_STREET("Kleine Straße",
             (diceValues) -> {
                 return diceValues.contains(3) && diceValues.contains(4) && ((diceValues.contains(1) && diceValues.contains(2)) ||
                         (diceValues.contains(2) && diceValues.contains(5)) || (diceValues.contains(5) && diceValues.contains(6)));
             },
             (diceValue) -> 30),
-    BIG_STREET("große Straße",
+    BIG_STREET("Große Straße",
             (diceValues) -> {
                 return diceValues.contains(2) && diceValues.contains(3) && diceValues.contains(4) && diceValues.contains(5) &&
                         (diceValues.contains(1) || diceValues.contains(6));
             },
-            (diceValue) -> 40),
-    //    KNIFFEL,
+            (diceValues) -> 40),
     CHANCE("Chance",
             (diceValues) -> {
                 return true;
             },
-            (diceValue) -> {
-                int points = diceValue.stream().mapToInt(Integer::intValue).sum();
+            (diceValues) -> {
+                int points = diceValues.stream().mapToInt(Integer::intValue).sum();
                 return points;
-            }),;
+            }),
+    ;
 
 
-//    public final static WinPatterns[] WIN_PATTERNS = new WinPatterns[]{
-//            ONE_EYES,
-//            TWO_EYES,
-//            THIRD_EYES,
-//            FOUR_EYES,
-//            FIVE_EYES,
-//            SIX_EYES,
-//            BONUS_AT_63_POINTS,
-//            THREE_OF_A_KIND,
-//            FOUR_OF_A_KIND,
-//            FULL_HOUSE,
-//            SMALL_STREET,
-//            BIG_STREET,
-//            KNIFFEL,
-//            CHANCE,
-//
-//    };
 
     private Function<ArrayList<Integer>, Boolean> matcherFunction;
     private Function<ArrayList<Integer>, Integer> pointFunction;
@@ -165,8 +126,19 @@ public enum WinPatterns {
         return displayName;
     }
 
+    public static void printResultSuggestions(ArrayList<Integer> availableDices) {
+        for (WinPatterns pattern : WinPatterns.values()) {
+            if (pattern.matches(availableDices)) {
+                System.out.println("Deine gesamten Ergebnisse treffen auf '" + pattern.getDisplayName() + "' zu. (" + pattern.getPoints(availableDices) + " Punkte)");
+            }
+        }
+    }
 
-    };
+    @Override
+    public String toString() {
+        return displayName;
+    }
+}
 
 
 

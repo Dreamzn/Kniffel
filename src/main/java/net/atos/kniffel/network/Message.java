@@ -55,7 +55,6 @@ public class Message {
         return null;
     }
 
-    @Override
     public String toString() {
         return "Message{" +
                 "type=" + type +
