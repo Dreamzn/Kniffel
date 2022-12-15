@@ -43,13 +43,13 @@ public class Win {
                     int points = pattern.getPoints(dices);
                     resultListWithPoints.put(pattern, points);
                     System.out.println("Es wurden " + points + " Punkte bei '" + selectedResultName + "' eingetragen.");
+                }}
+                if (!validUserInput) {
+                    System.out.println("Dieses Ergebnisfeld ist nicht verfügbar. Wähle erneut.");
                 }
-            }
-            //TODO: Bei falscher Eingabe muss Ausgabe "falsche Eingabe" kommen
-            //TODO: Auswahl via Zahleingabe
-            //TODO: Bei Ergebnissen mit fester Punktzahl muss geprüft werden ob die Würfel auf das Ergebnis zutreffen, sonst 0 Punkte
-            //TODO: Ergebnissfelder sollen nicht mehrmals auswählbar sein
-
+                //TODO: Auswahl via Zahleingabe
+                //TODO: Bei Ergebnissen mit fester Punktzahl muss geprüft werden ob die Würfel auf das Ergebnis zutreffen, sonst 0 Punkte
+                //TODO: Ergebnissfelder sollen nicht mehrmals auswählbar sein
         }
     }
 

@@ -26,10 +26,9 @@ public class Kniffel {
 
         for (int roundCount = 1; roundCount < 14; roundCount++) { //roundCounter until 13 rounds
             ArrayList<Integer> storedDices = new ArrayList<Integer>();
-            System.out.println(roundCount + ". Runde");
 
             for (int reroll = 1; reroll < 4; reroll++) { //inner reRollCounter until 3 Rounds
-                System.out.println(reroll +". Wurf:");
+                System.out.println(reroll +"/3 Würfen der " + roundCount + ". Runde:");
                 Rolls roll = new Rolls();
                 roll.rollDices(DICECOUNT - storedDices.size());
 
