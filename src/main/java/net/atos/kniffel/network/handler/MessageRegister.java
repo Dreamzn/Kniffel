@@ -18,9 +18,11 @@ public class MessageRegister extends AbstractMessageHandler {
     @Override
     public void handle(MessageHandlingServer server, MessageHandlingClient client, Message message) {
         client.setParticipant(message.getData());
-        for (MessageHandlingClient messageHandlingClient :server.getConnectedClients()) {
-            if(!messageHandlingClient.getParticipant().equals(client.getParticipant())){
-                client.sendMessage(new Message(Message.MessageType.MESSAGE_ALL, "Client" + client.getParticipant() +" joined the server", "All"));
+        for (MessageHandlingClient messageHandlingClient : server.getConnectedClients()) {
+            if (messageHandlingClient.getParticipant() != null && !messageHandlingClient.getParticipant().equals(client.getParticipant())) {
+                Message msgToSend = new Message(Message.MessageType.MESSAGE_ALL, "Client" + client.getParticipant() + " joined the server", "All");
+                LOG.trace("Send message ::= [{}] to client ::= [{}]", msgToSend, messageHandlingClient.getParticipant());
+                messageHandlingClient.sendMessage(msgToSend);
             }
         }
     }

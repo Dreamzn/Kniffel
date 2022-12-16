@@ -109,6 +109,8 @@ public class MessageHandlingClient extends Thread {
     public void sendMessage(Message message){
         try {
             outputStream.write(message.toJSON());
+            outputStream.newLine();
+            outputStream.flush();
         } catch (IOException e) {
             LOG.warn("Exception for sending a message: ", e);
         }

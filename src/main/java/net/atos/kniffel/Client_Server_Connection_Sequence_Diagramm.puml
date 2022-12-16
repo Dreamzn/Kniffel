@@ -1,0 +1,58 @@
+
+@startuml
+'https://plantuml.com/sequence-diagramm
+
+actor Server
+actor "Client A" as CA
+
+
+
+    activate Server
+    Server -> Server : wait for\nclient connection
+    deactivate Server
+    activate CA
+    CA -> Server : Connecting
+    deactivate CA
+    activate Server
+
+    create "Server Handler A" as SVA
+    Server -> SVA : create
+    activate SVA
+    SVA -> SVA : wait for\nclient message
+    deactivate SVA
+    Server -> CA: connection established
+    activate CA
+    Server -> Server : wait for\n client connection
+    deactivate Server
+
+    create "Client A Receiver" as CAR
+    CA -> CAR : create receiver\nthread
+    activate CAR
+    CAR -> CAR: wait for\nserver message
+    deactivate CAR
+    CA -> CA : wait for user\ninout
+
+    deactivate CA
+    deactivate Server
+
+    CA -> SVA : Register Name
+
+   activate SVA
+   SVA -> SVA : setName of participant
+   deactivate SVA
+
+   SVA -> CAR : User joint
+
+
+
+
+
+
+
+
+
+
+
+
+
+@enduml
