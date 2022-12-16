@@ -24,6 +24,8 @@ public class Kniffel {
             enableSuggestions = false;
         }
 
+        win.printResultList();
+
         for (int roundCount = 1; roundCount < 14; roundCount++) { //roundCounter until 13 rounds
             ArrayList<Integer> storedDices = new ArrayList<Integer>();
 

@@ -37,7 +37,17 @@ public enum WinPatterns {
                 return (countOne > 2 || countTwo > 2 || countThree > 2 || countFour > 2 || countFive > 2 || countSix > 2);
             },
             (diceValues) -> {
-                int points = diceValues.stream().mapToInt(Integer::intValue).sum();
+                int points = 0;
+                int countOne = Collections.frequency(diceValues, 1);
+                int countTwo = Collections.frequency(diceValues, 2);
+                int countThree = Collections.frequency(diceValues, 3);
+                int countFour = Collections.frequency(diceValues, 4);
+                int countFive = Collections.frequency(diceValues, 5);
+                int countSix = Collections.frequency(diceValues, 6);
+
+                if (countOne > 2 || countTwo > 2 || countThree > 2 || countFour > 2 || countFive > 2 || countSix > 2) {
+                    points = diceValues.stream().mapToInt(Integer::intValue).sum();
+                }
                 return points;
             }),
     FOUR_OF_A_KIND("Viererpasch",
@@ -52,7 +62,16 @@ public enum WinPatterns {
                 return (countOne > 3 || countTwo > 3 || countThree > 3 || countFour > 3 || countFive > 3 || countSix > 3);
             },
             (diceValues) -> {
-                int points = diceValues.stream().mapToInt(Integer::intValue).sum();
+                int points = 0;
+                int countOne = Collections.frequency(diceValues, 1);
+                int countTwo = Collections.frequency(diceValues, 2);
+                int countThree = Collections.frequency(diceValues, 3);
+                int countFour = Collections.frequency(diceValues, 4);
+                int countFive = Collections.frequency(diceValues, 5);
+                int countSix = Collections.frequency(diceValues, 6);
+
+                if (countOne > 3 || countTwo > 3 || countThree > 3 || countFour > 3 || countFive > 3 || countSix > 3) {
+                points = diceValues.stream().mapToInt(Integer::intValue).sum();}
                 return points;
             }),
     KNIFFEL("Kniffel",
@@ -65,7 +84,20 @@ public enum WinPatterns {
                 int countSix = Collections.frequency(diceValues, 6);
                 return (countOne > 4 || countTwo > 4 || countThree > 4 || countFour > 4 || countFive > 4 || countSix > 4);
             },
-            (diceValue) -> 50),
+            (diceValues) -> {
+                int points = 0;
+                int countOne = Collections.frequency(diceValues, 1);
+                int countTwo = Collections.frequency(diceValues, 2);
+                int countThree = Collections.frequency(diceValues, 3);
+                int countFour = Collections.frequency(diceValues, 4);
+                int countFive = Collections.frequency(diceValues, 5);
+                int countSix = Collections.frequency(diceValues, 6);
+                if (countOne > 4 || countTwo > 4 || countThree > 4 || countFour > 4 || countFive > 4 || countSix > 4) {
+                    points = 50;
+                }
+                return points;
+            }
+    ),
     FULL_HOUSE("Full-House",
             (diceValues) -> {
                 int countOne = Collections.frequency(diceValues, 1);
@@ -77,19 +109,46 @@ public enum WinPatterns {
                 return ((countOne == 3 || countTwo == 3 || countThree == 3 || countFour == 3 || countFive == 3 || countSix == 3) &&
                         (countOne == 2 || countTwo == 2 || countThree == 2 || countFour == 2 || countFive == 2 || countSix == 2));
             },
-            (diceValue) -> 25),
+            (diceValues) -> {
+                int countOne = Collections.frequency(diceValues, 1);
+                int countTwo = Collections.frequency(diceValues, 2);
+                int countThree = Collections.frequency(diceValues, 3);
+                int countFour = Collections.frequency(diceValues, 4);
+                int countFive = Collections.frequency(diceValues, 5);
+                int countSix = Collections.frequency(diceValues, 6);
+                int points = 0;
+                if ((countOne == 3 || countTwo == 3 || countThree == 3 || countFour == 3 || countFive == 3 || countSix == 3) &&
+                        (countOne == 2 || countTwo == 2 || countThree == 2 || countFour == 2 || countFive == 2 || countSix == 2)) {
+                    points = 25;
+                }
+                return points;
+            }),
     SMALL_STREET("Kleine Straße",
             (diceValues) -> {
                 return diceValues.contains(3) && diceValues.contains(4) && ((diceValues.contains(1) && diceValues.contains(2)) ||
                         (diceValues.contains(2) && diceValues.contains(5)) || (diceValues.contains(5) && diceValues.contains(6)));
             },
-            (diceValue) -> 30),
+            (diceValues) -> {
+                int points = 0;
+                if (diceValues.contains(3) && diceValues.contains(4) && ((diceValues.contains(1) && diceValues.contains(2)) ||
+                        (diceValues.contains(2) && diceValues.contains(5)) || (diceValues.contains(5) && diceValues.contains(6)))) {
+                    points = 30;
+                }
+                return points;
+            }),
     BIG_STREET("Große Straße",
             (diceValues) -> {
                 return diceValues.contains(2) && diceValues.contains(3) && diceValues.contains(4) && diceValues.contains(5) &&
                         (diceValues.contains(1) || diceValues.contains(6));
             },
-            (diceValues) -> 40),
+            (diceValues) -> {
+                int points = 0;
+                if (diceValues.contains(2) && diceValues.contains(3) && diceValues.contains(4) && diceValues.contains(5) &&
+                        (diceValues.contains(1) || diceValues.contains(6))) {
+                    points = 40;
+                }
+                return points;
+            }),
     CHANCE("Chance",
             (diceValues) -> {
                 return true;
@@ -99,7 +158,6 @@ public enum WinPatterns {
                 return points;
             }),
     ;
-
 
 
     private Function<ArrayList<Integer>, Boolean> matcherFunction;
