@@ -24,13 +24,11 @@ public class Kniffel {
             enableSuggestions = false;
         }
 
-        win.printResultList();
-
         for (int roundCount = 1; roundCount < 14; roundCount++) { //roundCounter until 13 rounds
             ArrayList<Integer> storedDices = new ArrayList<Integer>();
 
             for (int reroll = 1; reroll < 4; reroll++) { //inner reRollCounter until 3 Rounds
-                System.out.println(reroll +"/3 Würfen der " + roundCount + ". Runde:");
+                System.out.println("\n" + reroll +"/3 Würfen der " + roundCount + ". Runde:");
                 Rolls roll = new Rolls();
                 roll.rollDices(DICECOUNT - storedDices.size());
 
@@ -41,7 +39,7 @@ public class Kniffel {
                         ArrayList<Integer> availableDices = new ArrayList<>();
                         availableDices.addAll(roll.getCurrentRoll());
                         availableDices.addAll(storedDices);
-                        WinPatterns.printResultSuggestions(availableDices);
+                        win.printResultSuggestions(availableDices);
                     }
                     storedDices.addAll(roll.chooseDices());
 
@@ -57,11 +55,10 @@ public class Kniffel {
 
             }
             if (enableSuggestions) {
-                WinPatterns.printResultSuggestions(storedDices);
+                win.printResultSuggestions(storedDices);
             }
             win.resultSelection(storedDices); //select resultname to document points
         }
-        win.printResults(); //print all results with documented points
         win.calculateGameResult(); //calculate overall game result
     }
 }

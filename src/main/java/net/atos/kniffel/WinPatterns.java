@@ -74,30 +74,6 @@ public enum WinPatterns {
                 points = diceValues.stream().mapToInt(Integer::intValue).sum();}
                 return points;
             }),
-    KNIFFEL("Kniffel",
-            (diceValues) -> {
-                int countOne = Collections.frequency(diceValues, 1);
-                int countTwo = Collections.frequency(diceValues, 2);
-                int countThree = Collections.frequency(diceValues, 3);
-                int countFour = Collections.frequency(diceValues, 4);
-                int countFive = Collections.frequency(diceValues, 5);
-                int countSix = Collections.frequency(diceValues, 6);
-                return (countOne > 4 || countTwo > 4 || countThree > 4 || countFour > 4 || countFive > 4 || countSix > 4);
-            },
-            (diceValues) -> {
-                int points = 0;
-                int countOne = Collections.frequency(diceValues, 1);
-                int countTwo = Collections.frequency(diceValues, 2);
-                int countThree = Collections.frequency(diceValues, 3);
-                int countFour = Collections.frequency(diceValues, 4);
-                int countFive = Collections.frequency(diceValues, 5);
-                int countSix = Collections.frequency(diceValues, 6);
-                if (countOne > 4 || countTwo > 4 || countThree > 4 || countFour > 4 || countFive > 4 || countSix > 4) {
-                    points = 50;
-                }
-                return points;
-            }
-    ),
     FULL_HOUSE("Full-House",
             (diceValues) -> {
                 int countOne = Collections.frequency(diceValues, 1);
@@ -149,6 +125,30 @@ public enum WinPatterns {
                 }
                 return points;
             }),
+    KNIFFEL("Kniffel",
+            (diceValues) -> {
+                int countOne = Collections.frequency(diceValues, 1);
+                int countTwo = Collections.frequency(diceValues, 2);
+                int countThree = Collections.frequency(diceValues, 3);
+                int countFour = Collections.frequency(diceValues, 4);
+                int countFive = Collections.frequency(diceValues, 5);
+                int countSix = Collections.frequency(diceValues, 6);
+                return (countOne > 4 || countTwo > 4 || countThree > 4 || countFour > 4 || countFive > 4 || countSix > 4);
+            },
+            (diceValues) -> {
+                int points = 0;
+                int countOne = Collections.frequency(diceValues, 1);
+                int countTwo = Collections.frequency(diceValues, 2);
+                int countThree = Collections.frequency(diceValues, 3);
+                int countFour = Collections.frequency(diceValues, 4);
+                int countFive = Collections.frequency(diceValues, 5);
+                int countSix = Collections.frequency(diceValues, 6);
+                if (countOne > 4 || countTwo > 4 || countThree > 4 || countFour > 4 || countFive > 4 || countSix > 4) {
+                    points = 50;
+                }
+                return points;
+            }
+    ),
     CHANCE("Chance",
             (diceValues) -> {
                 return true;
@@ -183,15 +183,7 @@ public enum WinPatterns {
     public String getDisplayName() {
         return displayName;
     }
-
-    public static void printResultSuggestions(ArrayList<Integer> availableDices) {
-        for (WinPatterns pattern : WinPatterns.values()) {
-            if (pattern.matches(availableDices)) {
-                System.out.println("Deine gesamten Ergebnisse treffen auf '" + pattern.getDisplayName() + "' zu. (" + pattern.getPoints(availableDices) + " Punkte)");
-            }
-        }
-    }
-
+    
     @Override
     public String toString() {
         return displayName;
