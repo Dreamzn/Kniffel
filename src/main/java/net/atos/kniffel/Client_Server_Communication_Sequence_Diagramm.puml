@@ -1,5 +1,7 @@
 @startuml
 
+
+entity Server
 actor "Client A" as CA
 entity "Server Handler A" as SVA
 entity "Client A Receiver" as CAR
@@ -7,45 +9,32 @@ entity "Client B" as CB
 entity "Server Handler B" as SVB
 entity "Client B Receiver" as CBR
 
-activate CA
-activate SVA
-activate CAR
-activate CB
-activate SVB
-activate CBR
-
-CA -> CA : Wait for \ninput
-CAR -> CAR : Wait for \na message
-
-CB -> CB : Wait for \ninput
-CBR -> CBR : Wait for \nmessage
+ == all threads waiting  ==
 
 
 CA -> SVA : Send message
-deactivate CA
+CA -> CA : Wait for \ninput
+
+Server -> SVA : Send messageHandler
+Server -> SVA : Send connected clients
 
 SVA -> SVA : Controll  \nmessage type
 SVA -> CBR : Send message
 
-activate CA
-CA -> CA : Wait for \ninput
 
 CBR -> CBR : Outprint \nmessage
-deactivate CBR
+CBR -> CBR : Wait for \nmessage
 
 CB -> SVB : Send message
-deactivate CB
-activate CBR
-CBR -> CBR : Wait for \nmessage
+CB -> CB : Wait for input
+
+Server -> SVB : Send messageHandler
+Server -> SVB : Send connected clients
 
 SVB -> SVB : Controll \nmessage type
 SVB -> CAR : Send message
 
-activate CB
-CB -> CB : Wait for \ninput
-
 CAR -> CAR : Outprint \nmessage
-deactivate CAR
-
+CAR -> CAR : Wait for message
 
 @enduml

@@ -5,14 +5,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * The Message has messageTypes which decide who the message is going to receive
+ * and converting the message from an object to a string and back, for the data transfer
+ */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class Message {
+public class Message implements net.atos.kniffel.network.OutPrintInAndOutput {
+
+    /**
+     * Logger
+     */
 
     private static final Logger LOG = LoggerFactory.getLogger(Message.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 
 
+
+    /**
+     * MessageTypes which decides to whom the message is transfer to
+     */
     public enum MessageType {
         REGISTER,
         MESSAGE_ALL,
@@ -20,22 +33,45 @@ public class Message {
         EXIT
     }
 
+    /**
+     * MessageTypes which decides to whom the message is transfer to
+     */
     private MessageType type;
-
+    /**
+     * String input of the message
+     */
     private String data;
-
+    /**
+     * The recipient
+     */
     private String recipient;
 
 
+    /**
+     * Create a new instance of a message. A message has a messageType, a String with the actual message and the recipient
+     * @param messageType
+     * @param data
+     * @param recipient
+     */
     public Message(MessageType messageType, String data, String recipient){
         this.type = messageType;
         this.data = data;
         this.recipient = recipient;
     }
 
-    public Message(){}
+    private Message() {
+    }
 
-    //String to Object
+    @Override
+    public void Printer(Message message) {
+
+    }
+
+    /**
+     * Converting a string to an JSON object(Datatype Message)
+     * @param message to convert
+     * @return Message
+     */
     public static Message fromJSON(String message) {
         try {
             return OBJECT_MAPPER.readValue(message, Message.class);
@@ -46,6 +82,11 @@ public class Message {
     }
 
     //Object to string
+
+    /**
+     * Convert a JSON object(MessageType) to a string
+     * @return String
+     */
     public String toJSON() {
         try {
             return OBJECT_MAPPER.writeValueAsString(this);
@@ -63,14 +104,25 @@ public class Message {
                 '}';
     }
 
+    /**
+     * Get the messageType of the message
+     * @return messageType
+     */
     public MessageType getType() {
         return type;
     }
 
+    /**
+     * Get the data(String) from the message
+     * @return
+     */
     public String getData() {
         return data;
     }
 
+    /**
+     * Get the Recipient(String) from the message
+     */
     public String getRecipient() {
         return recipient;
     }

@@ -7,18 +7,44 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client extends Thread {
+/**
+ * A Client to connect with a server to communicate with it or other connected
+ */
+public class Client extends Thread implements OutPrintInAndOutput {
+    /**
+     * Logger
+     */
     private static final Logger LOG = LoggerFactory.getLogger(Client.class);
+    /**
+     * Client ID
+     */
     private String ip;
-
-
+    /**
+     * Port number
+     */
     private int port;
-
+    /**
+     * The TCP/IP socket
+     */
     private Socket clientSocket;
+    /**
+     * Stream to send messages to the client.
+     */
     private PrintWriter socketOutputStrm;
-
+    /**
+     * Stream to receive messages from the client.
+     */
     private BufferedReader socketInputStrm;
 
+    private boolean loopExit = true;
+
+    /**
+     * Create a new instance of a client with an ID and port to connect with. Input and output socket, reader and writer and  it's name  were created automatic
+     *
+     * @param ip
+     * @param port
+     * @throws IOException
+     */
     public Client(String ip, int port) throws IOException {
         this.ip = ip;
         this.port = port;
@@ -28,16 +54,23 @@ public class Client extends Thread {
         socketInputStrm = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         setName("Receiver");
         register();
+
     }
 
+    /**
+     * Starten the client Thread for receiving messages
+     */
     public void run() {
         try {
             receivedMessage();
-        }catch (Exception e){
+        } catch (Exception e) {
             LOG.warn("Problem to read socket input: ", e);
         }
     }
 
+    /**
+     * Register the client and set the name of the participant
+     */
     public void register() {
         Message message;
         Scanner scanner = new Scanner(System.in);
@@ -53,14 +86,44 @@ public class Client extends Thread {
 
     }
 
+    /**
+     * Send a message to other participant or server based on the message type
+     */
     public void sendMessage() {
         Message message;
+        String messageData = "";
+        Message.MessageType messageType;
+        String recipient = "";
         Scanner scanner = new Scanner(System.in);
-        while (true) {
 
-            System.out.println("Write message");
-            String messageToSend = scanner.nextLine();
-            message = new Message(Message.MessageType.MESSAGE_ALL, messageToSend, "All");
+        while (loopExit) {
+            System.out.println("Select messageType \n" +
+                    "1. " + Message.MessageType.MESSAGE_ALL + "\n" +
+                    "2. " + Message.MessageType.MESSAGE_PRIVATE + "\n" +
+                    "3. " + Message.MessageType.EXIT);
+            int input = Integer.parseInt(scanner.nextLine());
+
+            if (input == 1){
+            messageType = Message.MessageType.MESSAGE_ALL;
+            }else if (input == 2){
+                messageType = Message.MessageType.MESSAGE_PRIVATE;
+            }else {
+                messageType = Message.MessageType.EXIT;
+            }
+
+            if (!messageType.equals(Message.MessageType.EXIT)){
+                System.out.println("Write message");
+                messageData = scanner.nextLine();
+
+                if (messageType.equals(Message.MessageType.MESSAGE_PRIVATE)){
+                    System.out.println("What is the name of the recipient?");
+                    recipient = scanner.nextLine();
+                }
+            }else {
+                loopExit = false;
+            }
+
+            message = new Message(messageType, messageData, recipient);
             if (clientSocket.isConnected() && !clientSocket.isClosed()) {
                 System.out.println("Send <" + message + ">");
                 socketOutputStrm.println(message.toJSON());
@@ -70,28 +133,39 @@ public class Client extends Thread {
         }
     }
 
+    /**
+     * Getting the input from the input socket and print out the received message
+     */
     public void receivedMessage() throws IOException {
-        while (true) {
+        while (loopExit) {
             LOG.debug("Wait for message...");
             String message = socketInputStrm.readLine();
+            Message msg = Message.fromJSON(message);
             if (message == null) {
                 LOG.debug("No Message received");
-
-            }else {
-                LOG.info("Received message: " + message);
+            } else {
+                System.out.println(msg.getData());
             }
-
         }
     }
 
+    /**
+     * Closes the client socket to break the connection
+     *
+     * @throws IOException
+     */
     public void stopConnection() throws IOException {
         clientSocket.close();
     }
 
     public static void main(String[] args) throws Exception {
-
-        Client client = new Client("127.0.0.1", 4444);
+        Client client = new Client("192.168.51.50", 4444);
         client.start();
         client.sendMessage();
+    }
+
+    @Override
+    public void Printer(Message message) {
+        System.out.println("Received message: " + message.getData());
     }
 }

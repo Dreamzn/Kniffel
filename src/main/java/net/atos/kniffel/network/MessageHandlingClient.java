@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MessageHandlingClient extends Thread {
+public class MessageHandlingClient extends Thread implements OutPrintInAndOutput{
 
     /**
      * Logger.
@@ -45,6 +45,9 @@ public class MessageHandlingClient extends Thread {
      */
     private MessageHandlingServer server;
 
+    /**
+     * Name of the participant
+     */
     private String name;
 
 
@@ -64,14 +67,25 @@ public class MessageHandlingClient extends Thread {
         this.start();
     }
 
+    /**
+     * Set the name of the participant
+     * @param name of participant
+     */
     public void setParticipant(String name) {
         this.name = name;
     }
 
+    /**
+     * Get the name of the participant
+     * @return participant name
+     */
     public String getParticipant() {
         return name;
     }
 
+    /**
+     * Starting MessageHandlingClient thread for receiving messages
+     */
     @Override
     public void run() {
 
@@ -80,7 +94,6 @@ public class MessageHandlingClient extends Thread {
         while (run) {
 
             try {
-
                 LOG.debug("Wait for message...");
                 String message = inputStream.readLine();
 
@@ -89,9 +102,8 @@ public class MessageHandlingClient extends Thread {
                     socket.close();
                     break;
                 }
-
-                LOG.trace("Received message from client ::= [{}]", message);
                 Message msgObj = Message.fromJSON(message);
+                LOG.info("Received message: " + message);
                 messageHandler.forEach(handler -> handler.handleMessage(server, this, msgObj));
 
             } catch (IOException e) {
@@ -102,10 +114,18 @@ public class MessageHandlingClient extends Thread {
 
     }
 
+    /**
+     * Close the socket
+     * @throws IOException
+     */
     public void closeSocket() throws IOException {
         socket.close();
     }
 
+    /**
+     * Send the message
+     * @param message
+     */
     public void sendMessage(Message message){
         try {
             outputStream.write(message.toJSON());
@@ -119,5 +139,10 @@ public class MessageHandlingClient extends Thread {
     @Override
     public String toString() {
         return this.getName();
+    }
+
+    @Override
+    public void Printer(Message message) {
+        System.out.println("Received message: " + message);
     }
 }

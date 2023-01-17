@@ -11,25 +11,46 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageHandlingServer {
+public class MessageHandlingServer{
 
+    /**
+     * Logger
+     */
     private static final Logger LOG = LoggerFactory.getLogger(MessageHandlingServer.class);
-
+    /**
+     * The TCP/IP socket
+     */
     private ServerSocket serverSocket;
 
+    /**
+     * Boolean for while loop
+     */
     private boolean running = true;
 
+    /**
+     * Port number
+     */
     private int port;
-
+    /**
+     * List of connected clients
+     */
     private List<MessageHandlingClient> connectedClients = new ArrayList<>();
-
+    /**
+     * List of messageHandler
+     */
     private List<MessageHandler> messageHandler;
 
+    /**
+     * Create a new Server
+     */
     public MessageHandlingServer(List<MessageHandler> messageHandler, int port) {
         this.messageHandler = messageHandler;
         this.port = port;
     }
 
+    /**
+     * Start server thread to connect with clients
+     */
     public void start() {
 
         try {
@@ -58,6 +79,10 @@ public class MessageHandlingServer {
         }
     }
 
+    /**
+     * Closes the server socket
+     * @throws IOException
+     */
     public void stop() throws IOException {
         running = false;
         if (!serverSocket.isClosed()) {
@@ -76,10 +101,18 @@ public class MessageHandlingServer {
                 '}';
     }
 
+    /**
+     * Get the liest of messageHandler
+     * @return messageHandler list
+     */
     public List<MessageHandler> getMessageHandler() {
         return messageHandler;
     }
 
+    /**
+     * Get the list with connected clients
+     * @return list with connected clients
+     */
     public List<MessageHandlingClient> getConnectedClients() {
         return connectedClients;
     }
@@ -95,6 +128,5 @@ public class MessageHandlingServer {
         MessageHandlingServer server = new MessageHandlingServer(handler, 4444);
         server.start();
     }
-
 
 }
